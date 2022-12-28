@@ -1,6 +1,6 @@
 # NestJS Project with TypeORM
 
-NestJS / TypeScript / TypeORM
+NestJS / TypeScript / TypeORM / Swagger
 
 
 ## Installation

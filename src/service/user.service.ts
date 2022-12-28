@@ -2,7 +2,7 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ErrorCode } from 'src/core/enum';
 import { ERROR_MSG } from 'src/core/errorMsg';
-import { CreateUserReq } from 'src/core/response';
+import { CreateUserReq, Pager } from 'src/core/response';
 import { User } from 'src/entity/user';
 import { Repository } from 'typeorm';
 
@@ -13,8 +13,23 @@ export class UserService {
     private usersRepository: Repository<User>,
   ) {}
 
-  findAll(): Promise<User[]> {
-    return this.usersRepository.find();
+  async findAll(
+    pageIndex: number,
+    pageSize: number,
+    userName = '',
+    displayName = '',
+  ): Promise<Pager<User>> {
+    const execSql = this.usersRepository
+      .createQueryBuilder('user')
+      .where(`user.userName like '%${userName}%'`)
+      .andWhere(`user.displayName like '%${displayName}%'`);
+    const users = await execSql
+      .orderBy('user.createdTime', 'DESC')
+      .skip(pageIndex * pageSize)
+      .take(pageSize)
+      .getMany();
+    const count = await execSql.getCount();
+    return Promise.resolve({ list: users, total: count });
   }
 
   findOne(id: string): Promise<User> {
@@ -27,7 +42,7 @@ export class UserService {
 
   async create(request: CreateUserReq): Promise<void> {
     const { userName, displayName, password } = request;
-    const user = this.usersRepository.findOne({ where: { userName } });
+    const user = await this.usersRepository.findOne({ where: { userName } });
     if (user) {
       throw new HttpException(
         ERROR_MSG[ErrorCode.USER_EXIST],
