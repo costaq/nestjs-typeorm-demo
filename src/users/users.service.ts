@@ -1,13 +1,14 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ErrorCode } from 'src/core/enum';
-import { ERROR_MSG } from 'src/core/errorMsg';
-import { CreateUserReq, Pager } from 'src/core/response';
-import { User } from 'src/entity/user';
+import { ErrorCode } from '../../src/core/enum';
+import { ERROR_MSG } from '../../src/core/errorMsg';
+import { Pager } from '../../src/core/pager';
+import { User } from './users.entity';
 import { Repository } from 'typeorm';
+import { CreateUser } from './users.dto';
 
 @Injectable()
-export class UserService {
+export class UsersService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
@@ -32,15 +33,15 @@ export class UserService {
     return Promise.resolve({ list: users, total: count });
   }
 
-  findOne(id: string): Promise<User> {
-    return this.usersRepository.findOneBy({ id });
+  async findOne(id: string): Promise<User> {
+    return await this.usersRepository.findOneBy({ id });
   }
 
   async remove(id: string): Promise<void> {
     await this.usersRepository.delete(id);
   }
 
-  async create(request: CreateUserReq): Promise<void> {
+  async create(request: CreateUser): Promise<void> {
     const { userName, displayName, password } = request;
     const user = await this.usersRepository.findOne({ where: { userName } });
     if (user) {

@@ -1,13 +1,14 @@
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
-import { CreateUserReq, Pager } from 'src/core/response';
-import { User } from 'src/entity/user';
-import { UserService } from 'src/service/user.service';
+import { User } from './users.entity';
+import { UsersService } from './users.service';
 import { ApiTags, ApiParam, ApiQuery } from '@nestjs/swagger';
+import { Pager } from '../../src/core/pager';
+import { CreateUser } from './users.dto';
 
 @ApiTags('用户')
 @Controller('users')
-export class UserController {
-  constructor(private readonly userService: UserService) {}
+export class UsersController {
+  constructor(private readonly userService: UsersService) {}
 
   @Get(':id')
   @ApiParam({
@@ -47,7 +48,7 @@ export class UserController {
   }
 
   @Post('create')
-  create(@Body() request: CreateUserReq) {
+  create(@Body() request: CreateUser) {
     return this.userService.create(request);
   }
 }

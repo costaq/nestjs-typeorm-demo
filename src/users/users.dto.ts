@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CreateUserReq {
+export class CreateUser {
   @ApiProperty({
     description: '用户名',
   })
@@ -16,8 +16,3 @@ export class CreateUserReq {
   })
   password: string;
 }
-
-export type Pager<T> = {
-  list: T[];
-  total: number;
-};

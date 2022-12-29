@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { HttpErrorFilter } from './common/error.filter';
 import { TransformInterceptor } from './interceptor/transform.interceptor';
-import { AppModule } from './module/app.module';
+import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 async function bootstrap() {
