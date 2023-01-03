@@ -1,17 +1,19 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ErrorCode } from '../../src/core/enum';
-import { ERROR_MSG } from '../../src/core/errorMsg';
-import { Pager } from '../../src/core/pager';
+import { ErrorCode } from '../core/enum';
+import { ERROR_MSG } from '../core/errorMsg';
+import { Pager } from '../core/pager';
 import { User } from './users.entity';
 import { Repository } from 'typeorm';
 import { CreateUser } from './users.dto';
+import { CommonRedisService } from '../commonRedis/commonRedis.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
+    private readonly commonRedisService: CommonRedisService,
   ) {}
 
   async findAll(
@@ -43,6 +45,7 @@ export class UsersService {
 
   async create(request: CreateUser): Promise<void> {
     const { userName, displayName, password } = request;
+    // this.commonRedisService.set(userName, displayName);
     const user = await this.usersRepository.findOne({ where: { userName } });
     if (user) {
       throw new HttpException(
